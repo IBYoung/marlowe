@@ -49,7 +49,8 @@ getUsedChoiceNumbersObs _ _ = emptyInput
 getUsedChoiceNumbersMoney :: State -> Money -> Input
 getUsedChoiceNumbersMoney st (AddMoney m1 m2) = foldl1 combineInputs $ map (getUsedChoiceNumbersMoney st) [m1, m2]
 getUsedChoiceNumbersMoney st (MoneyFromChoice identch per m)
- = foldl1 combineInputs $ [emptyInput {ic = Map.singleton (identch, per) 0}, getUsedChoiceNumbersMoney st m]
+ | not $ Map.member (identch, per) (sch st) = foldl1 combineInputs $ [emptyInput {ic = Map.singleton (identch, per) 0}, getUsedChoiceNumbersMoney st m]
+ | otherwise = getUsedChoiceNumbersMoney st m 
 getUsedChoiceNumbersMoney st _ = emptyInput
 
 -- Obtains all the choices that are potentially checked by a contract (taken as "0")
